@@ -32,9 +32,9 @@ typedef struct tagInfo {
 	
 	int EXP;
 
-	float Att;
-	float Def;
-	float speed;
+	int Att;
+	int Def;
+	int speed;
 
 	int Level;
 
@@ -82,8 +82,9 @@ void SceneManager(OBJECT* _Player);
 char* SetName();
 
 void LogoScene();
-void MenuScene();
+void MenuScene(OBJECT* _Player);
 void FirstScene();
+void FirstPokemon(OBJECT* _Player);
 void StageScene(OBJECT* _Player);
 
 void InitializePlayer(OBJECT* _Player);
@@ -121,9 +122,10 @@ void SceneManager(OBJECT* _Player) {
 	{
 	case Scene_Logo:
 		LogoScene();
+		FirstPokemon(_Player);
 		break;
 	case Scene_Menu:
-		MenuScene();
+		MenuScene(_Player);
 		break;
 	case Scene_Stage:
 		StageScene(_Player);
@@ -160,11 +162,21 @@ void LogoScene() {
 
 	Sleep(500);
 	FirstScene();
-	SceneState++;
 }
 
-void MenuScene() {
+void MenuScene (OBJECT* _Player) {
 	printf_s("MenuScene\n");
+
+	printf_s("%s \n", _Player->user.info1.Name);
+	printf_s("%d \n", _Player->user.info1.Att);
+	printf_s("%d \n", _Player->user.info1.Def);
+	printf_s("%d \n", _Player->user.info1.EXP);
+	printf_s("%d \n", _Player->user.info1.HP);
+	printf_s("%d \n", _Player->user.info1.Level);
+	printf_s("%d \n", _Player->user.info1.speed);
+	printf_s("%s \n", _Player->user.info1.skillname1);
+	printf_s("%d \n", _Player->user.info1.skillpoint1);
+	printf_s("%d \n", _Player->user.info1.skillpp1);
 
 	printf_s("다음 씬 ㄱㄱ??\n1. 이동\n2. 종료\n입력 : ");
 
@@ -182,24 +194,46 @@ void FirstScene() {
 	Sleep(3000);
 	system("cls");
 	printf_s("대사변경테스트 1");
+	
+}
 
-	Sleep(3000);
-	system("cls");
-	printf_s("대사변경테스트 2");
+void FirstPokemon(OBJECT* _Player) {
+	int i = 0;
+	printf_s("선택하기 : ");
+	scanf_s("%d", &i);
 
-	Sleep(3000);
-	system("cls");
-	printf_s("대사변경테스트 3");
+	char pokemon1[8] = "꼬부기";
+	char skill1[24] = "몸동박치기";
 
-	Sleep(3000);
-	system("cls");
-	printf_s("대사변경테스트 4");
+	char* pname1 = (char*)malloc(strlen(pokemon1) + 1);
+	strcpy(pname1, pokemon1);
+	char* pskill1 = (char*)malloc(strlen(skill1) + 1);
+	strcpy(pskill1, skill1);
 
-	Sleep(3000);
-	system("cls");
-	printf_s("대사변경테스트 5\n");
-
-
+	switch (i) {
+	case 1:
+		printf_s("%d", i);
+		_Player->user.info1.Name = pname1;
+		_Player->user.info1.Att = 4;
+		_Player->user.info1.Def = 4;
+		_Player->user.info1.EXP = 0;
+		_Player->user.info1.HP = 100;
+		_Player->user.info1.Level = 1;
+		_Player->user.info1.speed = 5;
+		_Player->user.info1.skillname1 = pskill1;
+		_Player->user.info1.skillpoint1 = 10;
+		_Player->user.info1.skillpp1 = 10;
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default :
+		FirstPokemon(_Player);
+		break;
+	}
+		
+	SceneState++;
 
 }
 
