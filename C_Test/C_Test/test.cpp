@@ -22,6 +22,8 @@ int SceneState = 0;
 
 int Check = 1;
 
+int pokemoninfo = 1;
+
 
 // 구조체 선언
 
@@ -29,8 +31,10 @@ typedef struct tagInfo {
 	char* Name;
 
 	int HP;
+	int MAXHP;
 	
 	int EXP;
+	int MAXEXP;
 
 	int Att;
 	int Def;
@@ -89,6 +93,10 @@ void StageScene(OBJECT* _Player);
 
 void InitializePlayer(OBJECT* _Player);
 void PlayerScene(OBJECT* _Player);
+
+int SelectMotion();
+int SelectMotionBattle();
+void Battle(OBJECT* _Player);
 
 void InitializeEnemy(OBJECT* _Enemy);
 void EnemyScene(OBJECT* _Enemy);
@@ -199,6 +207,7 @@ void FirstScene() {
 
 void FirstPokemon(OBJECT* _Player) {
 	int i = 0;
+	system("cls");
 	printf_s("선택하기 : ");
 	scanf_s("%d", &i);
 
@@ -217,23 +226,26 @@ void FirstPokemon(OBJECT* _Player) {
 		_Player->user.info1.Att = 4;
 		_Player->user.info1.Def = 4;
 		_Player->user.info1.EXP = 0;
+		_Player->user.info1.MAXEXP = 0;
 		_Player->user.info1.HP = 100;
+		_Player->user.info1.MAXHP = 100;
 		_Player->user.info1.Level = 1;
 		_Player->user.info1.speed = 5;
 		_Player->user.info1.skillname1 = pskill1;
 		_Player->user.info1.skillpoint1 = 10;
 		_Player->user.info1.skillpp1 = 10;
+		SceneState++;
 		break;
 	case 2:
+		SceneState++;
 		break;
 	case 3:
+		SceneState++;
 		break;
 	default :
 		FirstPokemon(_Player);
 		break;
 	}
-		
-	SceneState++;
 
 }
 
@@ -251,10 +263,94 @@ void InitializePlayer(OBJECT* _Player) {
 DWORD SetnameTime = 0;
 
 void PlayerScene(OBJECT* _Player) {
+	int i = SelectMotion();
+
+	switch (i) {
+	case 1 :
+		Battle(_Player);
+		break;
+	case 2 :
+		break;
+	case 3 :
+		break;
+	case 4 :
+		break;
+
+
+	}
 	
 }
 
+int SelectMotion() {
+	int i = 0;
+	printf_s("행동 선택 : ");
+	scanf_s("%d", &i);
+
+	return i;
+}
+
+int SelectMotionBattle() {
+	int i = 0;
+	printf_s("배틀중 행동 선택 : ");
+	scanf_s("%d", &i);
+
+	return i;
+}
+
+void Battle(OBJECT* _Player) {
+
+	printf_s("배틀\n");
+
+	OBJECT* Enemy = (OBJECT*)malloc(sizeof(OBJECT));
+	InitializeEnemy(Enemy);
+
+	while (true) {
+		
+		int i = SelectMotionBattle();
+
+		switch (i) {
+		case 1:
+			printf_s("공격");
+			break;
+		case 2:
+			printf_s("아이템");
+			break;
+		case 3:
+			printf_s("교체");
+			break;
+		case 4:
+			printf_s("도망");
+			break;
+		default:
+			break;
+
+		}
+	}
+
+}
+
 void InitializeEnemy(OBJECT* _Enemy) {
+	char pokemon[8] = "파이리";
+	char skill1[24] = "화염방사";
+
+	char* pname = (char*)malloc(strlen(pokemon) + 1);
+	strcpy(pname, pokemon);
+	char* pskill1 = (char*)malloc(strlen(skill1) + 1);
+	strcpy(pskill1, skill1);
+
+	_Enemy->user.info1.Name = pname;
+	_Enemy->user.info1.Att = 4;
+	_Enemy->user.info1.Def = 4;
+	_Enemy->user.info1.EXP = 0;
+	_Enemy->user.info1.MAXEXP = 0;
+	_Enemy->user.info1.HP = 100;
+	_Enemy->user.info1.MAXHP = 100;
+	_Enemy->user.info1.Level = 1;
+	_Enemy->user.info1.speed = 5;
+	_Enemy->user.info1.skillname1 = pskill1;
+	_Enemy->user.info1.skillpoint1 = 10;
+	_Enemy->user.info1.skillpp1 = 10;
+
 	
 }
 
