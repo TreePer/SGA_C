@@ -96,6 +96,7 @@ void Battle(OBJECT* _Player);
 void Attack(OBJECT* _Player, OBJECT* _Enemy);
 void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy);
 int SelectPokemon(OBJECT* _Player);
+void InsertPokemon(OBJECT* _Player, OBJECT* _Enemy, int select);
 void SwitchPokemon(OBJECT* _Player);
 
 void InitializeEnemy(OBJECT* _Enemy);
@@ -111,16 +112,19 @@ int main(void) {
 	system("mode con: cols=150 lines=60");
 	system("title 김동욱 C Text Pokemon");
 
+	
 	OBJECT* Player = (OBJECT*)malloc(sizeof(OBJECT));
-
-	for (int i = 0; i < 6; ++i) {
-		Player->user.info[i] = (INFO*)malloc(sizeof(OBJECT));
-		free(Player->user.info[i]);
-		Player->user.info[i] = nullptr;
-	}
 	InitializePlayer(Player);
 
-	printf_s("%s \n", Player->user.userName);
+	for (int i = 0; i < 6; ++i) {
+		Player->user.info[i] = (INFO*)malloc(sizeof(INFO));
+		free(Player->user.info[i]);
+		Player->user.info[i] = nullptr;
+	}	
+
+	printf_s("플레이어 이름 %s \n", Player->user.userName);
+
+
 
 	while (true) {
 		SceneManager(Player);
@@ -181,16 +185,18 @@ void LogoScene() {
 void MenuScene (OBJECT* _Player) {
 	printf_s("MenuScene\n");
 
-	printf_s("%s \n", _Player->user.info[0].Name);
-	printf_s("%d \n", _Player->user.info[0].Att);
-	printf_s("%d \n", _Player->user.info[0].Def);
-	printf_s("%d \n", _Player->user.info[0].EXP);
-	printf_s("%d \n", _Player->user.info[0].HP);
-	printf_s("%d \n", _Player->user.info[0].Level);
-	printf_s("%d \n", _Player->user.info[0].speed);
-	printf_s("%s \n", _Player->user.info[0].skillname1);
-	printf_s("%d \n", _Player->user.info[0].skillpoint1);
-	printf_s("%d \n", _Player->user.info[0].skillpp1);
+	
+
+	printf_s("%s \n", _Player->user.info[0]->Name);
+	printf_s("%d \n", _Player->user.info[0]->Att);
+	printf_s("%d \n", _Player->user.info[0]->Def);
+	printf_s("%d \n", _Player->user.info[0]->EXP);
+	printf_s("%d \n", _Player->user.info[0]->HP);
+	printf_s("%d \n", _Player->user.info[0]->Level);
+	printf_s("%d \n", _Player->user.info[0]->speed);
+	printf_s("%s \n", _Player->user.info[0]->skillname1);
+	printf_s("%d \n", _Player->user.info[0]->skillpoint1);
+	printf_s("%d \n", _Player->user.info[0]->skillpp1);
 
 	printf_s("다음 씬 ㄱㄱ??\n1. 이동\n2. 종료\n입력 : ");
 
@@ -207,7 +213,9 @@ void FirstScene() {
 
 	Sleep(3000);
 	system("cls");
-	printf_s("대사변경테스트 1");
+	printf_s("대사변경테스트 1\n");
+	Sleep(3000);
+	printf_s("대사변경테스트 2");
 	
 }
 
@@ -218,28 +226,30 @@ void FirstPokemon(OBJECT* _Player) {
 	scanf_s("%d", &i);
 
 	char pokemon1[8] = "꼬부기";
-	char skill1[24] = "몸동박치기";
+	char skill1[24] = "몸통박치기";
 
 	char* pname1 = (char*)malloc(strlen(pokemon1) + 1);
 	strcpy(pname1, pokemon1);
 	char* pskill1 = (char*)malloc(strlen(skill1) + 1);
 	strcpy(pskill1, skill1);
 
+	_Player->user.info[0] = (INFO*)malloc(sizeof(INFO));
+
 	switch (i) {
 	case 1:
 		printf_s("%d", i);
-		_Player->user.info[0].Name = pname1;		
-		_Player->user.info[0].Att = 4;
-		_Player->user.info[0].Def = 4;
-		_Player->user.info[0].EXP = 0;
-		_Player->user.info[0].MAXEXP = 0;
-		_Player->user.info[0].HP = 100;
-		_Player->user.info[0].MAXHP = 100;
-		_Player->user.info[0].Level = 1;
-		_Player->user.info[0].speed = 5;
-		_Player->user.info[0].skillname1 = pskill1;
-		_Player->user.info[0].skillpoint1 = 10;
-		_Player->user.info[0].skillpp1 = 10;
+		_Player->user.info[0]->Name = pname1;		
+		_Player->user.info[0]->Att = 4;
+		_Player->user.info[0]->Def = 4;
+		_Player->user.info[0]->EXP = 0;
+		_Player->user.info[0]->MAXEXP = 0;
+		_Player->user.info[0]->HP = 100;
+		_Player->user.info[0]->MAXHP = 100;
+		_Player->user.info[0]->Level = 1;
+		_Player->user.info[0]->speed = 5;
+		_Player->user.info[0]->skillname1 = pskill1;
+		_Player->user.info[0]->skillpoint1 = 10;
+		_Player->user.info[0]->skillpp1 = 10;
 		SceneState++;
 		break;
 	case 2:
@@ -304,11 +314,7 @@ int SelectMotionBattle() {
 }
 
 void Battle(OBJECT* _Player) {
-
-	SelectPokemon(_Player);
-
 	
-
 	printf_s("배틀\n");
 
 	OBJECT* Enemy = (OBJECT*)malloc(sizeof(OBJECT));
@@ -321,9 +327,11 @@ void Battle(OBJECT* _Player) {
 		switch (i) {
 		case 1:
 			printf_s("공격");
+			Attack(_Player, Enemy);
 			break;
 		case 2:
 			printf_s("몬스터볼");
+			CatchPokemon(_Player, Enemy);
 			break;
 		case 3:
 			printf_s("교체");
@@ -342,134 +350,134 @@ void Battle(OBJECT* _Player) {
 void Attack(OBJECT* _Player, OBJECT* _Enemy) {
 
 	if (pokemoninfo == 1) {
-		if (_Player->user.info[0].Att > _Enemy->user.info[0].Def) {
-			_Enemy->user.info[0].HP -= _Player->user.info[0].Att - _Enemy->user.info[0].Def;
-			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[0].Att - _Enemy->user.info[0].Def));
+		if (_Player->user.info[0]->Att > _Enemy->user.info[0]->Def) {
+			_Enemy->user.info[0]->HP -= _Player->user.info[0]->Att - _Enemy->user.info[0]->Def;
+			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[0]->Att - _Enemy->user.info[0]->Def));
 			Sleep(500);
 		}
 		else {
-			_Enemy->user.info[0].HP -= 1;
+			_Enemy->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 주었습니다.\n");
 			Sleep(500);
 		}
 
-		if (_Enemy->user.info[0].Att > _Player->user.info[0].Def) {
-			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0].Att - _Player->user.info[0].Def);
+		if (_Enemy->user.info[0]->Att > _Player->user.info[0]->Def) {
+			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0]->Att - _Player->user.info[0]->Def);
 			Sleep(500);
 		}
 		else {
-			_Player->user.info[0].HP -= 1;
+			_Player->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 받았습니다.\n");
 			Sleep(500);
 		}
 
 	}
 	else if (pokemoninfo == 2) {
-		if (_Player->user.info[1].Att > _Enemy->user.info[0].Def) {
-			_Enemy->user.info[0].HP -= _Player->user.info[1].Att - _Enemy->user.info[0].Def;
-			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[1].Att - _Enemy->user.info[0].Def));
+		if (_Player->user.info[1]->Att > _Enemy->user.info[0]->Def) {
+			_Enemy->user.info[0]->HP -= _Player->user.info[1]->Att - _Enemy->user.info[0]->Def;
+			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[1]->Att - _Enemy->user.info[0]->Def));
 			Sleep(500);
 		}
 		else {
-			_Enemy->user.info[0].HP -= 1;
+			_Enemy->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 주었습니다.\n");
 			Sleep(500);
 		}
 
-		if (_Enemy->user.info[0].Att > _Player->user.info[1].Def) {
-			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0].Att - _Player->user.info[1].Def);
+		if (_Enemy->user.info[0]->Att > _Player->user.info[1]->Def) {
+			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0]->Att - _Player->user.info[1]->Def);
 			Sleep(500);
 		}
 		else {
-			_Player->user.info[1].HP -= 1;
+			_Player->user.info[1]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 받았습니다.\n");
 			Sleep(500);
 		}
 	}
 	else if (pokemoninfo == 3) {
-		if (_Player->user.info[2].Att > _Enemy->user.info[0].Def) {
-			_Enemy->user.info[0].HP -= _Player->user.info[2].Att - _Enemy->user.info[0].Def;
-			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[2].Att - _Enemy->user.info[0].Def));
+		if (_Player->user.info[2]->Att > _Enemy->user.info[0]->Def) {
+			_Enemy->user.info[0]->HP -= _Player->user.info[2]->Att - _Enemy->user.info[0]->Def;
+			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[2]->Att - _Enemy->user.info[0]->Def));
 			Sleep(500);
 		}
 		else {
-			_Enemy->user.info[0].HP -= 1;
+			_Enemy->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 주었습니다.\n");
 			Sleep(500);
 		}
 
-		if (_Enemy->user.info[0].Att > _Player->user.info[2].Def) {
-			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0].Att - _Player->user.info[2].Def);
+		if (_Enemy->user.info[0]->Att > _Player->user.info[2]->Def) {
+			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0]->Att - _Player->user.info[2]->Def);
 			Sleep(500);
 		}
 		else {
-			_Player->user.info[2].HP -= 1;
+			_Player->user.info[2]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 받았습니다.\n");
 			Sleep(500);
 		}
 	}
 	else if (pokemoninfo == 4) {
-		if (_Player->user.info[3].Att > _Enemy->user.info[0].Def) {
-			_Enemy->user.info[0].HP -= _Player->user.info[3].Att - _Enemy->user.info[0].Def;
-			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[3].Att - _Enemy->user.info[0].Def));
+		if (_Player->user.info[3]->Att > _Enemy->user.info[0]->Def) {
+			_Enemy->user.info[0]->HP -= _Player->user.info[3]->Att - _Enemy->user.info[0]->Def;
+			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[3]->Att - _Enemy->user.info[0]->Def));
 			Sleep(500);
 		}
 		else {
-			_Enemy->user.info[0].HP -= 1;
+			_Enemy->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 주었습니다.\n");
 			Sleep(500);
 		}
 
-		if (_Enemy->user.info[0].Att > _Player->user.info[3].Def) {
-			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0].Att - _Player->user.info[3].Def);
+		if (_Enemy->user.info[0]->Att > _Player->user.info[3]->Def) {
+			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0]->Att - _Player->user.info[3]->Def);
 			Sleep(500);
 		}
 		else {
-			_Player->user.info[3].HP -= 1;
+			_Player->user.info[3]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 받았습니다.\n");
 			Sleep(500);
 		}
 	}
 	else if (pokemoninfo == 5) {
-		if (_Player->user.info[4].Att > _Enemy->user.info[0].Def) {
-			_Enemy->user.info[0].HP -= _Player->user.info[4].Att - _Enemy->user.info[0].Def;
-			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[4].Att - _Enemy->user.info[0].Def));
+		if (_Player->user.info[4]->Att > _Enemy->user.info[0]->Def) {
+			_Enemy->user.info[0]->HP -= _Player->user.info[4]->Att - _Enemy->user.info[0]->Def;
+			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[4]->Att - _Enemy->user.info[0]->Def));
 			Sleep(500);
 		}
 		else {
-			_Enemy->user.info[0].HP -= 1;
+			_Enemy->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 주었습니다.\n");
 			Sleep(500);
 		}
 
-		if (_Enemy->user.info[0].Att > _Player->user.info[4].Def) {
-			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0].Att - _Player->user.info[3].Def);
+		if (_Enemy->user.info[0]->Att > _Player->user.info[4]->Def) {
+			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0]->Att - _Player->user.info[3]->Def);
 			Sleep(500);
 		}
 		else {
-			_Player->user.info[4].HP -= 1;
+			_Player->user.info[4]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 받았습니다.\n");
 			Sleep(500);
 		}
 	}
 	else if (pokemoninfo == 6) {
-		if (_Player->user.info[5].Att > _Enemy->user.info[0].Def) {
-			_Enemy->user.info[0].HP -= _Player->user.info[5].Att - _Enemy->user.info[0].Def;
-			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[5].Att - _Enemy->user.info[0].Def));
+		if (_Player->user.info[5]->Att > _Enemy->user.info[0]->Def) {
+			_Enemy->user.info[0]->HP -= _Player->user.info[5]->Att - _Enemy->user.info[0]->Def;
+			printf_s("%d의 데미지를 몬스터에게 주었습니다.\n", (_Player->user.info[5]->Att - _Enemy->user.info[0]->Def));
 			Sleep(500);
 		}
 		else {
-			_Enemy->user.info[0].HP -= 1;
+			_Enemy->user.info[0]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 주었습니다.\n");
 			Sleep(500);
 		}
 
-		if (_Enemy->user.info[0].Att > _Player->user.info[5].Def) {
-			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0].Att - _Player->user.info[5].Def);
+		if (_Enemy->user.info[0]->Att > _Player->user.info[5]->Def) {
+			printf_s("%d의 데미지를 몬스터에게 받았습니다.\n", _Enemy->user.info[0]->Att - _Player->user.info[5]->Def);
 			Sleep(500);
 		}
 		else {
-			_Player->user.info[5].HP -= 1;
+			_Player->user.info[5]->HP -= 1;
 			printf_s("1의 데미지를 몬스터에게 받았습니다.\n");
 			Sleep(500);
 		}
@@ -477,13 +485,14 @@ void Attack(OBJECT* _Player, OBJECT* _Enemy) {
 }
 
 void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy) {
-	int dice = (int)rand % 6; // 랜덤함수를 이용해 0, 1의 값이 나오게함
+	int dice = (int)rand() % 6; // 랜덤함수를 이용해 0, 1의 값이 나오게함
 
 	if (dice == 1) { // 1일경우
 		printf_s("신난다!\n");
-		printf_s("%s를(을) 잡았다.\n", _Enemy->user.info[0].Name);
+		printf_s("%s를(을) 잡았다.\n", _Enemy->user.info[0]->Name);
 
 		int select = SelectPokemon(_Player);
+		InsertPokemon(_Player, _Enemy, select);
 		
 		Sleep(500);
 	}
@@ -496,24 +505,61 @@ void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy) {
 }
 
 int SelectPokemon(OBJECT* _Player) {
-	int select = 0;
+	int select = 1;
 
-	printf_s("1. %s \n", _Player->user.info[0].Name);
-	if (_Player->user.info[1].Name != nullptr)
-		printf_s("2. %s \n", _Player->user.info[1].Name);
-	if (_Player->user.info[2].Name != nullptr)
-		printf_s("3. %s \n", _Player->user.info[2].Name);
-	if (_Player->user.info[3].Name != nullptr)
-		printf_s("4. %s \n", _Player->user.info[3].Name);
-	if (_Player->user.info[4].Name != nullptr)
-		printf_s("5. %s \n", _Player->user.info[4].Name);
-	if (_Player->user.info[5].Name != nullptr)
-		printf_s("6. %s \n", _Player->user.info[5].Name);
-
-	printf_s("저장할 위치 선택 : ");
-	scanf_s("%d", &select);
+	printf_s("1. %s \n", _Player->user.info[0]->Name);
+	if (_Player->user.info[1] != nullptr) {
+		printf_s("2. %s \n", _Player->user.info[1]->Name);
+		select++;
+	}
+		
+	if (_Player->user.info[2] != nullptr) {
+		printf_s("3. %s \n", _Player->user.info[2]->Name);
+		select++;
+	}
+		
+	if (_Player->user.info[3] != nullptr) {
+		printf_s("4. %s \n", _Player->user.info[3]->Name);
+		select++;
+	}
+		
+	if (_Player->user.info[4] != nullptr) {
+		printf_s("5. %s \n", _Player->user.info[4]->Name);
+		select++;
+	}
+		
+	if (_Player->user.info[5] != nullptr) {
+		printf_s("6. %s \n", _Player->user.info[5]->Name);
+		select++;
+	}
+		
+	if (select >= 5) {
+		printf_s("저장할 위치 선택 : ");
+		scanf_s("%d", &select);
+	}
+	
 
 	return select;
+}
+
+void InsertPokemon(OBJECT* _Player, OBJECT* _Enemy, int select) {
+
+	_Player->user.info[select] = (INFO*)malloc(sizeof(INFO));
+
+	_Player->user.info[select]->Name = _Enemy->user.info[0]->Name;
+	_Player->user.info[select]->Att = _Enemy->user.info[0]->Att;
+	_Player->user.info[select]->Def = _Enemy->user.info[0]->Def;
+	_Player->user.info[select]->EXP = 0;
+	_Player->user.info[select]->MAXEXP = _Enemy->user.info[0]->MAXEXP;
+	_Player->user.info[select]->HP = _Enemy->user.info[0]->HP;
+	_Player->user.info[select]->MAXHP = _Enemy->user.info[0]->MAXHP;
+	_Player->user.info[select]->Level = _Enemy->user.info[0]->Level;
+	_Player->user.info[select]->speed = _Enemy->user.info[0]->speed;
+	_Player->user.info[select]->skillname1 = _Enemy->user.info[0]->skillname1;
+	_Player->user.info[select]->skillpoint1 = _Enemy->user.info[0]->skillpoint1;
+	_Player->user.info[select]->skillpp1 = _Enemy->user.info[0]->skillpp1;
+
+	free(_Enemy);
 }
 
 void SwitchPokemon(OBJECT* _Player) {
@@ -521,6 +567,8 @@ void SwitchPokemon(OBJECT* _Player) {
 }
 
 void InitializeEnemy(OBJECT* _Enemy) {
+
+	_Enemy->user.info[0] = (INFO*)malloc(sizeof(INFO));
 	char pokemon[8] = "파이리";
 	char skill1[24] = "화염방사";
 
@@ -529,18 +577,18 @@ void InitializeEnemy(OBJECT* _Enemy) {
 	char* pskill1 = (char*)malloc(strlen(skill1) + 1);
 	strcpy(pskill1, skill1);
 
-	_Enemy->user.info[0].Name = pname;
-	_Enemy->user.info[0].Att = 4;
-	_Enemy->user.info[0].Def = 4;
-	_Enemy->user.info[0].EXP = 0;
-	_Enemy->user.info[0].MAXEXP = 0;
-	_Enemy->user.info[0].HP = 100;
-	_Enemy->user.info[0].MAXHP = 100;
-	_Enemy->user.info[0].Level = 1;
-	_Enemy->user.info[0].speed = 5;
-	_Enemy->user.info[0].skillname1 = pskill1;
-	_Enemy->user.info[0].skillpoint1 = 10;
-	_Enemy->user.info[0].skillpp1 = 10;
+	_Enemy->user.info[0]->Name = pname;
+	_Enemy->user.info[0]->Att = 4;
+	_Enemy->user.info[0]->Def = 4;
+	_Enemy->user.info[0]->EXP = 0;
+	_Enemy->user.info[0]->MAXEXP = 0;
+	_Enemy->user.info[0]->HP = 100;
+	_Enemy->user.info[0]->MAXHP = 100;
+	_Enemy->user.info[0]->Level = 1;
+	_Enemy->user.info[0]->speed = 5;
+	_Enemy->user.info[0]->skillname1 = pskill1;
+	_Enemy->user.info[0]->skillpoint1 = 10;
+	_Enemy->user.info[0]->skillpp1 = 10;
 
 	
 }
