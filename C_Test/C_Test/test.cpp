@@ -42,23 +42,6 @@ typedef struct tagInfo {
 	int speed;
 
 	int Level;
-
-	char* skillname1;
-	int skillpp1;
-	int skillpoint1;
-
-	char* skillname2;
-	int skillpp2;
-	int skillpoint2;
-
-	char* skillname3;
-	int skillpp3;
-	int skillpoint3;
-
-	char* skillname4;
-	int skillpp4;
-	int skillpoint4;
-
 }INFO;
 
 typedef struct userInfo {
@@ -71,11 +54,6 @@ typedef struct tagObject {
 	USER user;
 
 }OBJECT;
-
-// 기능 정리 - 유저생성(이름, 초기포켓몬), 전투(데미지계산, 포켓몬스탯비교, 스킬포인트사용, 아이템사용), 도망(랜덤), 
-//             이동(키입력? 문자입력?), 회복(특정장소로이동 후 한번에 회복), 포획(현재 체력 비교 + 랜덤)
-
-
 
 
 void SceneManager(OBJECT* _Player);
@@ -98,6 +76,9 @@ void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy);
 int SelectPokemon(OBJECT* _Player);
 void InsertPokemon(OBJECT* _Player, OBJECT* _Enemy, int select);
 void SwitchPokemon(OBJECT* _Player);
+int RunBattle();
+
+void RecoveryPokemon(OBJECT*  _Player);
 
 void InitializeEnemy(OBJECT* _Enemy);
 void EnemyScene(OBJECT* _Enemy);
@@ -194,9 +175,6 @@ void MenuScene (OBJECT* _Player) {
 	printf_s("%d \n", _Player->user.info[0]->HP);
 	printf_s("%d \n", _Player->user.info[0]->Level);
 	printf_s("%d \n", _Player->user.info[0]->speed);
-	printf_s("%s \n", _Player->user.info[0]->skillname1);
-	printf_s("%d \n", _Player->user.info[0]->skillpoint1);
-	printf_s("%d \n", _Player->user.info[0]->skillpp1);
 
 	printf_s("다음 씬 ㄱㄱ??\n1. 이동\n2. 종료\n입력 : ");
 
@@ -220,18 +198,16 @@ void FirstScene() {
 }
 
 void FirstPokemon(OBJECT* _Player) {
+
 	int i = 0;
 	system("cls");
 	printf_s("선택하기 : ");
 	scanf_s("%d", &i);
 
 	char pokemon1[8] = "꼬부기";
-	char skill1[24] = "몸통박치기";
 
 	char* pname1 = (char*)malloc(strlen(pokemon1) + 1);
 	strcpy(pname1, pokemon1);
-	char* pskill1 = (char*)malloc(strlen(skill1) + 1);
-	strcpy(pskill1, skill1);
 
 	_Player->user.info[0] = (INFO*)malloc(sizeof(INFO));
 
@@ -247,9 +223,7 @@ void FirstPokemon(OBJECT* _Player) {
 		_Player->user.info[0]->MAXHP = 100;
 		_Player->user.info[0]->Level = 1;
 		_Player->user.info[0]->speed = 5;
-		_Player->user.info[0]->skillname1 = pskill1;
-		_Player->user.info[0]->skillpoint1 = 10;
-		_Player->user.info[0]->skillpp1 = 10;
+
 		SceneState++;
 		break;
 	case 2:
@@ -286,6 +260,7 @@ void PlayerScene(OBJECT* _Player) {
 		Battle(_Player);
 		break;
 	case 2 :
+		RecoveryPokemon(_Player);
 		break;
 	case 3 :
 		break;
@@ -335,8 +310,14 @@ void Battle(OBJECT* _Player) {
 			break;
 		case 3:
 			printf_s("교체");
+			SwitchPokemon(_Player);
 			break;
 		case 4:
+			if (RunBattle() == 1) {
+				SceneState = 2;
+				StageScene(_Player);
+
+			}
 			printf_s("도망");
 			break;
 		default:
@@ -555,14 +536,85 @@ void InsertPokemon(OBJECT* _Player, OBJECT* _Enemy, int select) {
 	_Player->user.info[select]->MAXHP = _Enemy->user.info[0]->MAXHP;
 	_Player->user.info[select]->Level = _Enemy->user.info[0]->Level;
 	_Player->user.info[select]->speed = _Enemy->user.info[0]->speed;
-	_Player->user.info[select]->skillname1 = _Enemy->user.info[0]->skillname1;
-	_Player->user.info[select]->skillpoint1 = _Enemy->user.info[0]->skillpoint1;
-	_Player->user.info[select]->skillpp1 = _Enemy->user.info[0]->skillpp1;
 
 	free(_Enemy);
 }
 
 void SwitchPokemon(OBJECT* _Player) {
+	int select = 1;
+
+	printf_s("1. %s \n", _Player->user.info[0]->Name);
+	if (_Player->user.info[1] != nullptr) {
+		printf_s("2. %s \n", _Player->user.info[1]->Name);
+	}
+
+	if (_Player->user.info[2] != nullptr) {
+		printf_s("3. %s \n", _Player->user.info[2]->Name);
+	}
+
+	if (_Player->user.info[3] != nullptr) {
+		printf_s("4. %s \n", _Player->user.info[3]->Name);
+	}
+
+	if (_Player->user.info[4] != nullptr) {
+		printf_s("5. %s \n", _Player->user.info[4]->Name);
+	}
+
+	if (_Player->user.info[5] != nullptr) {
+		printf_s("6. %s \n", _Player->user.info[5]->Name);
+	}
+
+	if (select >= 5) {
+		printf_s("저장할 위치 선택 : ");
+		scanf_s("%d", &select);
+	}
+
+	pokemoninfo = select;
+
+}
+
+int RunBattle() {
+	int dice = (int)rand() % 6; // 랜덤함수를 이용해 0, 1의 값이 나오게함
+
+	if (dice == 1) { // 1일경우
+		printf_s("도망성공!\n");
+
+		Sleep(500);
+
+		return 1;
+	}
+	else { // 0일경우
+		printf_s("도망치는것에 [실패] 했습니다.\n");  // 도망치는것에 실패, 몬스터에게 데미지를 입음
+
+		Sleep(500);
+	}
+
+	return 0;
+
+}
+
+void RecoveryPokemon(OBJECT*  _Player) {
+
+	 _Player->user.info[0]->HP = _Player->user.info[0]->MAXHP;
+	if (_Player->user.info[1] != nullptr) {
+		_Player->user.info[1]->HP = _Player->user.info[1]->MAXHP;
+	}
+
+	if (_Player->user.info[2] != nullptr) {
+		_Player->user.info[2]->HP = _Player->user.info[2]->MAXHP;
+	}
+
+	if (_Player->user.info[3] != nullptr) {
+		_Player->user.info[3]->HP = _Player->user.info[3]->MAXHP;
+	}
+
+	if (_Player->user.info[4] != nullptr) {
+		_Player->user.info[4]->HP = _Player->user.info[4]->MAXHP;
+	}
+
+	if (_Player->user.info[5] != nullptr) {
+		_Player->user.info[5]->HP = _Player->user.info[5]->MAXHP;
+	}
 
 }
 
@@ -570,12 +622,9 @@ void InitializeEnemy(OBJECT* _Enemy) {
 
 	_Enemy->user.info[0] = (INFO*)malloc(sizeof(INFO));
 	char pokemon[8] = "파이리";
-	char skill1[24] = "화염방사";
 
 	char* pname = (char*)malloc(strlen(pokemon) + 1);
 	strcpy(pname, pokemon);
-	char* pskill1 = (char*)malloc(strlen(skill1) + 1);
-	strcpy(pskill1, skill1);
 
 	_Enemy->user.info[0]->Name = pname;
 	_Enemy->user.info[0]->Att = 4;
@@ -586,11 +635,6 @@ void InitializeEnemy(OBJECT* _Enemy) {
 	_Enemy->user.info[0]->MAXHP = 100;
 	_Enemy->user.info[0]->Level = 1;
 	_Enemy->user.info[0]->speed = 5;
-	_Enemy->user.info[0]->skillname1 = pskill1;
-	_Enemy->user.info[0]->skillpoint1 = 10;
-	_Enemy->user.info[0]->skillpp1 = 10;
-
-	
 }
 
 void EnemyScene(OBJECT* _Enemy) {
