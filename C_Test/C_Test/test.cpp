@@ -527,9 +527,9 @@ void Attack(OBJECT* _Player, OBJECT* _Enemy) {
 }
 
 void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy) {
-	int dice = (int)rand() % 6; // 랜덤함수를 이용해 0, 1의 값이 나오게함
+	int dice = (int)rand() % 6; 
 
-	if (dice == 1) { // 1일경우
+	if (dice == 1) {
 		printf_s("신난다!\n");
 		printf_s("%s를(을) 잡았다.\n", _Enemy->user.info[0]->Name);
 
@@ -538,8 +538,8 @@ void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy) {
 
 		Sleep(500);
 	}
-	else { // 0일경우
-		printf_s("도망치는것에 [실패] 했습니다.\n");  // 도망치는것에 실패, 몬스터에게 데미지를 입음
+	else { 
+		printf_s("포획에 실패 했습니다.\n");  
 
 		Sleep(500);
 	}
