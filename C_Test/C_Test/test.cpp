@@ -82,7 +82,8 @@ void RecoveryPokemon(OBJECT* _Player);
 
 void InitializeEnemy(OBJECT* _Enemy);
 
-void SetPosition(int _x, int _y, char* _str, int _Color = 7);
+void SetPosition(int _x, int _y, char* _str);
+void SetKorPosition(int _x, int _y, char _str[], int i);
 void SetColor(int _Color);
 void VisibleCursor();
 void InvisibleCursor();
@@ -93,7 +94,6 @@ int main(void) {
 	LogoScene();
 
 	OBJECT* Player = (OBJECT*)malloc(sizeof(OBJECT));
-	InitializePlayer(Player);
 
 	for (int i = 0; i < 6; ++i) {
 		Player->user.info[i] = (INFO*)malloc(sizeof(INFO));
@@ -101,7 +101,7 @@ int main(void) {
 		Player->user.info[i] = nullptr;
 	}
 
-	printf_s("플레이어 이름 %s \n", Player->user.userName);
+
 
 
 
@@ -119,6 +119,7 @@ void SceneManager(OBJECT* _Player) {
 	{
 	case Scene_Logo:
 		FirstScene();
+		InitializePlayer(_Player);
 		FirstPokemon(_Player);
 		break;
 	case Scene_Menu:
@@ -216,8 +217,6 @@ void LogoScene() {
 	system("color E");
 	Sleep(500);
 
-
-	system("mode con: cols=150 lines=60");
 	system("color 7");
 
 	VisibleCursor();
@@ -250,11 +249,56 @@ void MenuScene(OBJECT* _Player) {
 
 void FirstScene() {
 
-	Sleep(3000);
 	system("cls");
-	printf_s("대사변경테스트 1\n");
-	Sleep(3000);
-	printf_s("대사변경테스트 2");
+
+	char ment[9][86] = {
+		{"포켓몬스터  세계에  잘왔단다 !"},
+		{"나의 이름은  오박사"},
+		{"모두로부터는  포켓몬박사라고  존경받고  있단다"},
+		{"포켓몬스터........포켓몬"},
+		{"이  세계에는  포켓몬스터라고  불려지는  생명체들이  도처에  살고있다 !"},
+		{"하지만  우리들은  포켓몬  전부를  알고  있지는  못하다"},
+		{"포켓몬의  비밀은  아직도  잔뜩  있다 !"},
+		{"나는  그것을  밝혀내기  위하여  매일  포켓몬의  연구를  계속하고  있다는  말이다 !"},
+		{"그럼........슬슬  너의  이름을  가르쳐다오 !"}
+	};
+
+	int x = 10;
+	int y = 30;
+
+
+
+	SetPosition(0, y + 1, (char*)"    ==============================================================================================================================================\n");
+	SetPosition(0, y + 2, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 3, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 4, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 5, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 6, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 7, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 8, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 9, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 10, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 11, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 12, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, y + 13, (char*)"    ==============================================================================================================================================\n");
+
+
+
+
+
+
+	for (int y = 0; y < 9; ++y) {
+		for (int x = 0; x < strlen(ment[y]); x += 2) {
+
+			SetKorPosition(x + 6, y + 32, ment[y], x);
+
+			Sleep(50);
+		}
+		Sleep(500);
+	}
+
+
+	Sleep(1000);
 
 }
 
@@ -527,7 +571,7 @@ void Attack(OBJECT* _Player, OBJECT* _Enemy) {
 }
 
 void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy) {
-	int dice = (int)rand() % 6; 
+	int dice = (int)rand() % 6;
 
 	if (dice == 1) {
 		printf_s("신난다!\n");
@@ -538,8 +582,8 @@ void CatchPokemon(OBJECT* _Player, OBJECT* _Enemy) {
 
 		Sleep(500);
 	}
-	else { 
-		printf_s("포획에 실패 했습니다.\n");  
+	else {
+		printf_s("포획에 실패 했습니다.\n");
 
 		Sleep(500);
 	}
@@ -703,13 +747,20 @@ void InitializeEnemy(OBJECT* _Enemy) {
 }
 
 
-void SetPosition(int _x, int _y, char* _str, int _Color) {
+void SetPosition(int _x, int _y, char* _str) {
 	COORD Pos = { _x, _y };
 
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
-	SetColor(_Color);
 
 	printf_s("%s", _str);
+}
+
+void SetKorPosition(int _x, int _y, char _str[], int i) {
+	COORD Pos = { _x, _y };
+
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+
+	printf_s("%c%c", _str[i], _str[i + 1]);
 }
 
 
