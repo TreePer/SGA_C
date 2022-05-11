@@ -17,6 +17,10 @@ const int Scene_Menu = 1;
 const int Scene_Stage = 2;
 const int Scene_Exit = 3;
 
+const int LEFT = 0;
+const int CENTER = 50;
+const int RIGHT = 100;
+
 // 전역 변수 선언
 
 int SceneState = 0;
@@ -82,6 +86,9 @@ void RecoveryPokemon(OBJECT* _Player);
 
 void InitializeEnemy(OBJECT* _Enemy);
 
+void BigMessageBox();
+void SmallMessageBox(int x);
+
 void SetPosition(int _x, int _y, char* _str);
 void SetKorPosition(int _x, int _y, char _str[], int i);
 void SetColor(int _Color);
@@ -90,6 +97,7 @@ void InvisibleCursor();
 
 int main(void) {
 	system("title 김동욱 C Text Pokemon");
+	system("mode con:cols=150 lines=30");
 
 	LogoScene();
 
@@ -139,7 +147,7 @@ char* SetName() {
 	// ** scanf 함수로 문자열을 입력받기 위해 문자열을 받을수있는 배열을 선언.
 	char Buffer[128] = "";
 
-	printf_s("이름 입력 : ");
+	SetPosition(6, 17, (char*)"이름을 입력하세요 : ");
 
 	// ** 문자열을 입력 받음.
 	scanf("%s", Buffer);
@@ -157,7 +165,6 @@ char* SetName() {
 
 void LogoScene() {
 	InvisibleCursor();
-	system("mode con:cols=150 lines=30");
 	system("color E");
 
 	char LOGO[28][151] = {
@@ -219,7 +226,7 @@ void LogoScene() {
 
 	system("color 7");
 
-	VisibleCursor();
+
 
 }
 
@@ -251,7 +258,7 @@ void FirstScene() {
 
 	system("cls");
 
-	char ment[9][86] = {
+	char ment[9][128] = {
 		{"포켓몬스터  세계에  잘왔단다 !"},
 		{"나의 이름은  오박사"},
 		{"모두로부터는  포켓몬박사라고  존경받고  있단다"},
@@ -263,37 +270,17 @@ void FirstScene() {
 		{"그럼........슬슬  너의  이름을  가르쳐다오 !"}
 	};
 
-	int x = 10;
-	int y = 30;
 
-
-
-	SetPosition(0, y + 1, (char*)"    ==============================================================================================================================================\n");
-	SetPosition(0, y + 2, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 3, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 4, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 5, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 6, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 7, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 8, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 9, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 10, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 11, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 12, (char*)"    |                                                                                                                                             |\n");
-	SetPosition(0, y + 13, (char*)"    ==============================================================================================================================================\n");
-
-
-
-
-
+	BigMessageBox();
 
 	for (int y = 0; y < 9; ++y) {
 		for (int x = 0; x < strlen(ment[y]); x += 2) {
 
-			SetKorPosition(x + 6, y + 32, ment[y], x);
+			SetKorPosition(x + 6, y + 17, ment[y], x);
 
 			Sleep(50);
 		}
+		printf_s("\n");
 		Sleep(500);
 	}
 
@@ -304,44 +291,86 @@ void FirstScene() {
 
 void FirstPokemon(OBJECT* _Player) {
 
+	system("cls");
+	InvisibleCursor();
+	BigMessageBox();
+
+	char ment[3][128] = {
+		{"드디어  이제부터  너의  이야기가  시작되어진다"},
+		{"파트너가  될  포켓몬을  주겠다"},
+		{"자  고르거라  !"},
+	};
+
+	char* playername = strcat(_Player->user.userName, "!");
+	SetPosition(6, 17, playername);
+
+	printf_s("\n");
+
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < strlen(ment[i]); j += 2) {
+			SetKorPosition(j + 6, i + 18, ment[i], j);
+
+			Sleep(50);
+		}
+		printf_s("\n");
+		Sleep(1000);
+	}
+
+
 	int i = 0;
 	system("cls");
-	printf_s("선택하기 : ");
-	scanf_s("%d", &i);
+
+	BigMessageBox();
+	SmallMessageBox(LEFT);
+	SmallMessageBox(CENTER);
+	SmallMessageBox(RIGHT);
 
 	char pokemon1[8] = "꼬부기";
+	char pokemon2[8] = "파이리";
+	char pokemon3[16] = "이상해씨";
 
-	char* pname1 = (char*)malloc(strlen(pokemon1) + 1);
-	strcpy(pname1, pokemon1);
+	VisibleCursor();
+	SetPosition(6, 17, (char*)"포켓몬 선택하기 : ");
+	scanf_s("%d", &i);
+
+
+
+
 
 	_Player->user.info[0] = (INFO*)malloc(sizeof(INFO));
 
-	switch (i) {
-	case 1:
-		printf_s("%d", i);
-		_Player->user.info[0]->Name = pname1;
-		_Player->user.info[0]->Att = 4;
-		_Player->user.info[0]->Def = 4;
-		_Player->user.info[0]->EXP = 0;
-		_Player->user.info[0]->MAXEXP = 0;
-		_Player->user.info[0]->HP = 100;
-		_Player->user.info[0]->MAXHP = 100;
-		_Player->user.info[0]->Level = 1;
-		_Player->user.info[0]->speed = 5;
+	while (true) {
+		switch (i) {
+		case 1:
 
-		SceneState++;
-		break;
-	case 2:
-		SceneState++;
-		break;
-	case 3:
-		SceneState++;
-		break;
-	default:
-		FirstPokemon(_Player);
-		break;
+			char* pname = (char*)malloc(strlen(pokemon1) + 1);
+			strcpy(pname, pokemon1);
+			_Player->user.info[0]->Name = pname;
+			_Player->user.info[0]->Att = 4;
+			_Player->user.info[0]->Def = 4;
+			_Player->user.info[0]->EXP = 0;
+			_Player->user.info[0]->MAXEXP = 0;
+			_Player->user.info[0]->HP = 100;
+			_Player->user.info[0]->MAXHP = 100;
+			_Player->user.info[0]->Level = 1;
+			_Player->user.info[0]->speed = 5;
+
+			SceneState++;
+			MenuScene(_Player);
+			break;
+		case 2:
+			SceneState++;
+			MenuScene(_Player);
+			break;
+		case 3:
+			SceneState++;
+			MenuScene(_Player);
+			break;
+		default:
+
+			break;
+		}
 	}
-
 }
 
 void StageScene(OBJECT* _Player) {
@@ -351,6 +380,11 @@ void StageScene(OBJECT* _Player) {
 }
 
 void InitializePlayer(OBJECT* _Player) {
+	system("cls");
+
+	VisibleCursor();
+	BigMessageBox();
+
 	_Player->user.userName = SetName();
 
 }
@@ -744,6 +778,39 @@ void InitializeEnemy(OBJECT* _Enemy) {
 	_Enemy->user.info[0]->MAXHP = 100;
 	_Enemy->user.info[0]->Level = 1;
 	_Enemy->user.info[0]->speed = 5;
+}
+
+void BigMessageBox() {
+
+	SetPosition(0, 18, (char*)"    ==============================================================================================================================================\n");
+	SetPosition(0, 19, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 20, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 21, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 22, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 23, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 24, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 25, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 26, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 27, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 28, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 29, (char*)"    |                                                                                                                                             |\n");
+	SetPosition(0, 30, (char*)"    ==============================================================================================================================================\n");
+}
+
+void SmallMessageBox(int x) {
+	SetPosition(x, 3, (char*)"    =========================================\n");
+	SetPosition(x, 4, (char*)"    |                                        |\n");
+	SetPosition(x, 5, (char*)"    |                                        |\n");
+	SetPosition(x, 6, (char*)"    |                                        |\n");
+	SetPosition(x, 7, (char*)"    |                                        |\n");
+	SetPosition(x, 8, (char*)"    |                                        |\n");
+	SetPosition(x, 9, (char*)"    |                                        |\n");
+	SetPosition(x, 10, (char*)"    |                                        |\n");
+	SetPosition(x, 11, (char*)"    |                                        |\n");
+	SetPosition(x, 12, (char*)"    |                                        |\n");
+	SetPosition(x, 13, (char*)"    |                                        |\n");
+	SetPosition(x, 14, (char*)"    |                                        |\n");
+	SetPosition(x, 15, (char*)"    =========================================\n");
 }
 
 
